@@ -1,9 +1,6 @@
 from datetime import datetime
-from flask import render_template, request
+from flask import render_template, request,redirect
 from run import app
-from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
-from wxcloudrun.model import Counters
-from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 
 
 @app.route('/')
@@ -11,56 +8,50 @@ def index():
     """
     :return: 返回index页面
     """
-    return render_template('index.html')
+    return redirect('http://43.154.93.134')
 
 
-@app.route('/api/count', methods=['POST'])
-def count():
-    """
-    :return:计数结果/清除结果
-    """
-
-    # 获取请求体参数
-    params = request.get_json()
-
-    # 检查action参数
-    if 'action' not in params:
-        return make_err_response('缺少action参数')
-
-    # 按照不同的action的值，进行不同的操作
-    action = params['action']
-
-    # 执行自增操作
-    if action == 'inc':
-        counter = query_counterbyid(1)
-        if counter is None:
-            counter = Counters()
-            counter.id = 1
-            counter.count = 1
-            counter.created_at = datetime.now()
-            counter.updated_at = datetime.now()
-            insert_counter(counter)
-        else:
-            counter.id = 1
-            counter.count += 1
-            counter.updated_at = datetime.now()
-            update_counterbyid(counter)
-        return make_succ_response(counter.count)
-
-    # 执行清0操作
-    elif action == 'clear':
-        delete_counterbyid(1)
-        return make_succ_empty_response()
-
-    # action参数错误
-    else:
-        return make_err_response('action参数错误')
+@app.route('/image/<filename>/')
+def get_image(filename):
+    return redirect("http://43.154.93.134/image/<filename>/")
 
 
-@app.route('/api/count', methods=['GET'])
-def get_count():
-    """
-    :return: 计数的值
-    """
-    counter = Counters.query.filter(Counters.id == 1).first()
-    return make_succ_response(0) if counter is None else make_succ_response(counter.count)
+# 识别动物的参数回调
+@app.route('/uploader', methods = ['GET', 'POST'])
+def uploader():
+    if request.method == 'POST':
+        return redirect("http://43.154.93.134/uploader")
+     
+
+# 点击动物的参数回调
+@app.route('/introduce', methods = ['GET', 'POST'])
+def introduce():
+    if request.method == 'POST':
+        return redirect("http://43.154.93.134/introduce")
+
+# 查询动物的参数回调
+@app.route('/animal_query', methods = ['GET', 'POST'])
+def animal_query():
+    if request.method == 'POST':
+       return redirect("http://43.154.93.134/animal_query")
+
+# 查询地方法规的参数回调
+@app.route('/province_query', methods = ['GET', 'POST'])
+def province_query():
+    if request.method == 'POST':
+        return redirect("http://43.154.93.134/province_query")
+
+# 查询国家法规的参数回调
+@app.route('/nation_query', methods = ['GET', 'POST'])
+def nation_query():
+    if request.method == 'POST':
+        return redirect("http://43.154.93.134/nation_query")
+# 查询相关案例的参数回调
+@app.route('/example_query', methods = ['GET', 'POST'])
+def example_query():
+    if request.method == 'POST':
+        return redirect("http://43.154.93.134/example_query")
+
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0",port="8080")
